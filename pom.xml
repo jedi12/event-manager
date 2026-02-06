@@ -19,6 +19,7 @@
     <properties>
         <activeProfile>maven-central</activeProfile>
         <java.version>21</java.version>
+        <joinfaces.version>5.3.2</joinfaces.version>
     </properties>
 
     <dependencies>
@@ -53,7 +54,33 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Зависимости для UI -->
+        <dependency>
+            <groupId>org.joinfaces</groupId>
+            <artifactId>faces-spring-boot-starter</artifactId>
+            <version>${joinfaces.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+            <version>14.0.2</version>
+            <classifier>jakarta</classifier>
+        </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.joinfaces</groupId>
+                <artifactId>joinfaces-dependencies</artifactId>
+                <version>${joinfaces.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>

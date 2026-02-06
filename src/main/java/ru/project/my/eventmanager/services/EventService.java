@@ -26,6 +26,12 @@ public class EventService {
         this.locationRepository = locationRepository;
     }
 
+    public List<Event> getAllEvents() {
+        List<EventEntity> locationEntity = eventRepository.findAll();
+
+        return converter.toEvent(locationEntity);
+    }
+
     public Event createEvent(Event event, Long locationId) {
         LocationEntity existsLocation = locationRepository.findById(locationId)
                 .orElseThrow(() -> new ConditionUnacceptableException("Локация с locationId=%s отсутствует в системе".formatted(locationId)));

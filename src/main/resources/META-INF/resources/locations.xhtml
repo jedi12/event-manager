@@ -1,0 +1,98 @@
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:h="jakarta.faces.html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:f="jakarta.faces.core"
+        template="/main.xhtml">
+
+    <ui:define name="title">
+        Локации
+    </ui:define>
+
+    <ui:define name="header">
+        Локации
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="tableForm">
+            <h:panelGrid columns="2">
+                <p:commandButton value="Создать" action="#{locationsView.createLocation}" update="itemForm,growlForm" resetValues="true"/>
+                <p:commandButton value="Удалить" action="#{locationsView.deleteLocation}" update="tableForm,growlForm"/>
+            </h:panelGrid>
+
+            <p:panel style="padding:16px;overflow:auto;">
+                <p:dataTable id="dataTable" widgetVar="dataTable" value="#{locationsView.locations}" var="location" rowKey="#{location.id}"
+                             emptyMessage="Данные отсутствуют" selection="#{locationsView.selectedLocation}"
+                             rows="20" paginator="true" paginatorPosition="bottom" rowsPerPageTemplate="5,10,20">
+
+                    <p:ajax event="rowDblselect" listener="#{locationsView.editLocation}" update="itemForm,growlForm" resetValues="true"/>
+
+                    <p:column headerText="ID" width="100" filterBy="#{location.id}" sortBy="#{location.id}">
+                        <h:outputText value="#{location.id}"/>
+                    </p:column>
+
+                    <p:column headerText="НАЗВАНИЕ" width="200" filterBy="#{location.name}" sortBy="#{location.name}">
+                        <h:outputText value="#{location.name}"/>
+                    </p:column>
+
+                    <p:column headerText="АДРЕС" width="200" filterBy="#{location.address}" sortBy="#{location.address}">
+                        <h:outputText value="#{location.address}"/>
+                    </p:column>
+
+                    <p:column headerText="ВМЕСТИМОСТЬ" width="100" filterBy="#{location.capacity}" sortBy="#{location.capacity}">
+                        <h:outputText value="#{location.capacity}"/>
+                    </p:column>
+
+                    <p:column headerText="ОПИСАНИЕ ЛОКАЦИИ" width="300" filterBy="#{location.description}" sortBy="#{location.description}">
+                        <h:outputText value="#{location.description}"/>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+        </h:form>
+
+        <h:form id="itemForm">
+            <p:dialog id="itemDialog" widgetVar="itemDialog" modal="true" closeOnEscape="true" dynamic="true" resizable="false">
+                <f:facet name="header">
+                    <h:outputText value="#{empty locationsView.selectedLocation.id ? 'Создание' : 'Изменение'}"/>
+                </f:facet>
+
+                <p:panelGrid columns="1" layout="tabular" styleClass="ui-noborder" columnClasses="grid_col_400">
+                    <h:panelGroup>
+                        <p:outputLabel value="Id"/>
+                        <p:inputText value="#{locationsView.selectedLocation.id}" disabled="true"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Название"/>
+                        <p:inputText value="#{locationsView.selectedLocation.name}" maxlength="256"
+                                     required="true" requiredMessage="Требуется указать Название"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Адрес"/>
+                        <p:inputText value="#{locationsView.selectedLocation.address}" maxlength="256"
+                                    required="true" requiredMessage="Требуется указать Адрес"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Вместимость"/>
+                        <p:inputNumber value="#{locationsView.selectedLocation.capacity}" minValue="5" maxValue="150000" inputStyle="width:100%"
+                                       required="true" requiredMessage="Требуется указать Вместимость"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Описание локации"/>
+                        <p:inputTextarea value="#{locationsView.selectedLocation.description}" rows="3"/>
+                    </h:panelGroup>
+                </p:panelGrid>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Сохранить" action="#{locationsView.saveLocation}"
+                                     update="tableForm:dataTable,growlForm"/>
+                    <p:commandButton value="Закрыть" type="button" onclick="PF('itemDialog').hide()"/>
+                </f:facet>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>

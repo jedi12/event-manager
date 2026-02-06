@@ -2,6 +2,7 @@ package ru.project.my.eventmanager.services.model;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 public class Event {
     private Long id;
@@ -91,5 +92,34 @@ public class Event {
     }
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Event event = (Event) object;
+        return Objects.equals(id, event.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", owner=" + owner +
+                ", maxPlaces=" + maxPlaces +
+                ", occupiedPlaces=" + occupiedPlaces +
+                ", date=" + date +
+                ", cost=" + cost +
+                ", duration=" + duration +
+                ", location=" + location +
+                ", status=" + status +
+                '}';
     }
 }

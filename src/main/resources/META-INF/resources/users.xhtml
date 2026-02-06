@@ -1,0 +1,96 @@
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:h="jakarta.faces.html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:f="jakarta.faces.core"
+        template="/main.xhtml">
+
+    <ui:define name="title">
+        Пользователи
+    </ui:define>
+
+    <ui:define name="header">
+        Пользователи
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="tableForm">
+            <h:panelGrid columns="1">
+                <p:commandButton value="Создать" action="#{usersView.createUser}" update="itemForm,growlForm" resetValues="true"/>
+            </h:panelGrid>
+
+            <p:panel style="padding:16px;overflow:auto;">
+                <p:dataTable widgetVar="dataTable" value="#{usersView.users}" var="user" rowKey="#{user.id}"
+                             emptyMessage="Данные отсутствуют" selection="#{usersView.selectedUser}"
+                             rows="20" paginator="true" paginatorPosition="bottom" rowsPerPageTemplate="5,10,20">
+
+                    <p:ajax event="rowDblselect" listener="#{usersView.editUser}" update="itemForm,growlForm" resetValues="true"/>
+
+                    <p:column headerText="ID" width="100" filterBy="#{user.id}" sortBy="#{user.id}">
+                        <h:outputText value="#{user.id}"/>
+                    </p:column>
+
+                    <p:column headerText="ЛОГИН" width="100" filterBy="#{user.login}" sortBy="#{user.login}">
+                        <h:outputText value="#{user.login}"/>
+                    </p:column>
+
+                    <p:column headerText="ВОЗРАСТ" width="100" filterBy="#{user.age}" sortBy="#{user.age}">
+                        <h:outputText value="#{user.age}"/>
+                    </p:column>
+
+                    <p:column headerText="РОЛЬ" width="100" filterBy="#{user.role}" sortBy="#{user.role}">
+                        <h:outputText value="#{user.role}"/>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+        </h:form>
+
+        <h:form id="itemForm">
+            <p:dialog id="itemDialog" widgetVar="itemDialog" modal="true" closeOnEscape="true" dynamic="true" resizable="false">
+                <f:facet name="header">
+                    <h:outputText value="#{empty usersView.selectedUser.id ? 'Создание' : 'Изменение'}"/>
+                </f:facet>
+
+                <p:panelGrid columns="1" layout="tabular" styleClass="ui-noborder" columnClasses="grid_col_400">
+                    <h:panelGroup>
+                        <p:outputLabel value="Id"/>
+                        <p:inputText value="#{usersView.selectedUser.id}" disabled="true"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Логин"/>
+                        <p:inputText value="#{usersView.selectedUser.login}" maxlength="256"
+                                     disabled="#{not empty usersView.selectedUser.id}"
+                                     required="true" requiredMessage="Требуется указать Логин"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Пароль"/>
+                        <p:password value="#{usersView.selectedUser.password}" maxlength="256"
+                                    disabled="#{not empty usersView.selectedUser.id}"
+                                    required="true" requiredMessage="Требуется указать Пароль"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Возраст"/>
+                        <p:inputNumber value="#{usersView.selectedUser.age}" minValue="1" maxValue="150" inputStyle="width:100%"
+                                       disabled="#{not empty usersView.selectedUser.id}"
+                                       required="true" requiredMessage="Требуется указать Возраст"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Роль"/>
+                        <p:inputText value="#{usersView.selectedUser.role}" disabled="true"/>
+                    </h:panelGroup>
+                </p:panelGrid>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Сохранить" action="#{usersView.saveUser}" update="tableForm:dataTable,growlForm"
+                                     rendered="#{empty usersView.selectedUser.id}"/>
+                    <p:commandButton value="Закрыть" type="button" onclick="PF('itemDialog').hide()"/>
+                </f:facet>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>

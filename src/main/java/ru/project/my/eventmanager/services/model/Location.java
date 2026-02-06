@@ -1,5 +1,7 @@
 package ru.project.my.eventmanager.services.model;
 
+import java.util.Objects;
+
 public class Location {
     private Long id;
     private String name;
@@ -40,5 +42,29 @@ public class Location {
     }
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Location location = (Location) object;
+        return Objects.equals(id, location.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Location{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", capacity=" + capacity +
+                ", description='" + description + '\'' +
+                '}';
     }
 }

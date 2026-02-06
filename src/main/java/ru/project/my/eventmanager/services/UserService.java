@@ -8,6 +8,8 @@ import ru.project.my.eventmanager.repositories.UserRepository;
 import ru.project.my.eventmanager.repositories.entity.UserEntity;
 import ru.project.my.eventmanager.services.model.User;
 
+import java.util.List;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -16,6 +18,12 @@ public class UserService {
     public UserService(UserRepository userRepository, UserEntityConverter converter) {
         this.userRepository = userRepository;
         this.converter = converter;
+    }
+
+    public List<User> getAllUsers() {
+        List<UserEntity> userEntities = userRepository.findAll();
+
+        return converter.toUser(userEntities);
     }
 
     public User createUser(User user) {
