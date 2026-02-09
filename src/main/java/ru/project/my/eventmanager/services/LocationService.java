@@ -1,6 +1,7 @@
 package ru.project.my.eventmanager.services;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.project.my.eventmanager.converters.LocationEntityConverter;
 import ru.project.my.eventmanager.exceptions.ConditionUnacceptableException;
 import ru.project.my.eventmanager.exceptions.NotFoundException;
@@ -29,6 +30,7 @@ public class LocationService {
         return converter.toLocation(locationEntity);
     }
 
+    @Transactional
     public Location createLocation(Location location) {
         if (locationRepository.existsByNameIgnoreCase(location.getName())) {
             throw new ConditionUnacceptableException("Локация с таким названием уже существует. Измените значение атрибута 'name'");
@@ -40,6 +42,7 @@ public class LocationService {
         return converter.toLocation(locationEntity);
     }
 
+    @Transactional
     public void deleteLocation(Long locationId) {
         LocationEntity locationEntity = locationRepository.findById(locationId)
                 .orElseThrow(() -> new NotFoundException("Локация с locationId=%s отсутствует в системе".formatted(locationId)));
@@ -58,6 +61,7 @@ public class LocationService {
         return converter.toLocation(locationEntity);
     }
 
+    @Transactional
     public Location updateLocation(Location updatedLocation) {
         LocationEntity existsLocation = locationRepository.findById(updatedLocation.getId())
                 .orElseThrow(() -> new NotFoundException("Локация с locationId=%s отсутствует в системе".formatted(updatedLocation.getId())));
@@ -68,9 +72,11 @@ public class LocationService {
             }
         }
 
-        LocationEntity locationEntity = converter.toEntity(updatedLocation);
-        locationEntity = locationRepository.save(locationEntity);
+        existsLocation.setName(updatedLocation.getName());
+        existsLocation.setAddress(updatedLocation.getAddress());
+        existsLocation.setCapacity(updatedLocation.getCapacity());
+        existsLocation.setDescription(updatedLocation.getDescription());
 
-        return converter.toLocation(locationEntity);
+        return converter.toLocation(existsLocation);
     }
 }

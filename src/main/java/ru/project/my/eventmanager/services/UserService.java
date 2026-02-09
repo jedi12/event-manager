@@ -1,6 +1,7 @@
 package ru.project.my.eventmanager.services;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.project.my.eventmanager.converters.UserEntityConverter;
 import ru.project.my.eventmanager.exceptions.ConditionUnacceptableException;
 import ru.project.my.eventmanager.exceptions.NotFoundException;
@@ -26,6 +27,7 @@ public class UserService {
         return converter.toUser(userEntities);
     }
 
+    @Transactional
     public User createUser(User user) {
         if (userRepository.existsByLoginIgnoreCase(user.getLogin())) {
             throw new ConditionUnacceptableException("Пользователь с таким логином уже существует");

@@ -1,6 +1,7 @@
 package ru.project.my.eventmanager.services;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.project.my.eventmanager.converters.EventEntityConverter;
 import ru.project.my.eventmanager.exceptions.ConditionUnacceptableException;
 import ru.project.my.eventmanager.repositories.EventRepository;
@@ -32,6 +33,7 @@ public class EventService {
         return converter.toEvent(locationEntity);
     }
 
+    @Transactional
     public Event createEvent(Event event, Long locationId) {
         LocationEntity existsLocation = locationRepository.findById(locationId)
                 .orElseThrow(() -> new ConditionUnacceptableException("Локация с locationId=%s отсутствует в системе".formatted(locationId)));
@@ -57,6 +59,7 @@ public class EventService {
         return converter.toEvent(eventEntity);
     }
 
+    @Transactional
     public void deleteEvent(Long eventId) {
         EventEntity currentEvent = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ConditionUnacceptableException("Мероприятие с eventId=%s отсутствует в системе".formatted(eventId)));
@@ -76,6 +79,7 @@ public class EventService {
         return converter.toEvent(eventEntity);
     }
 
+    @Transactional
     public Event updateEvent(Event event, Long locationId) {
         EventEntity existsEvent = eventRepository.findById(event.getId())
                 .orElseThrow(() -> new ConditionUnacceptableException("Мероприятие с eventId=%s отсутствует в системе".formatted(event.getId())));
