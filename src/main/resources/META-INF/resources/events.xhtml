@@ -1,0 +1,152 @@
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:h="jakarta.faces.html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:f="jakarta.faces.core"
+        template="/main.xhtml">
+
+    <ui:define name="title">
+        События
+    </ui:define>
+
+    <ui:define name="header">
+        События
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="tableForm">
+            <h:panelGrid columns="2">
+                <p:commandButton value="Создать" action="#{eventsView.createEvent}" update="itemForm,growlForm" resetValues="true"/>
+                <p:commandButton value="Удалить" action="#{eventsView.deleteEvent}" update="tableForm,growlForm"/>
+            </h:panelGrid>
+
+            <p:panel style="padding:16px;overflow:auto;">
+                <p:dataTable id="dataTable" widgetVar="dataTable" value="#{eventsView.events}" var="event" rowKey="#{event.id}"
+                             emptyMessage="Данные отсутствуют" selection="#{eventsView.selectedEvent}"
+                             rows="20" paginator="true" paginatorPosition="bottom" rowsPerPageTemplate="5,10,20">
+
+                    <p:ajax event="rowDblselect" listener="#{eventsView.editEvent}" update="itemForm,growlForm" resetValues="true"/>
+
+                    <p:column headerText="ID" width="50" filterBy="#{event.id}" sortBy="#{event.id}">
+                        <h:outputText value="#{event.id}"/>
+                    </p:column>
+
+                    <p:column headerText="НАЗВАНИЕ" width="100" filterBy="#{event.name}" sortBy="#{event.name}">
+                        <h:outputText value="#{event.name}"/>
+                    </p:column>
+
+                    <p:column headerText="ВЛАДЕЛЕЦ" width="100" filterBy="#{event.owner.login}" sortBy="#{event.owner.login}">
+                        <h:outputText value="#{event.owner.login}"/>
+                    </p:column>
+
+                    <p:column headerText="ВСЕГО МЕСТ" width="50" filterBy="#{event.maxPlaces}" sortBy="#{event.maxPlaces}">
+                        <h:outputText value="#{event.maxPlaces}"/>
+                    </p:column>
+
+                    <p:column headerText="ЗАНЯТО МЕСТ" width="50" filterBy="#{event.occupiedPlaces}" sortBy="#{event.occupiedPlaces}">
+                        <h:outputText value="#{event.occupiedPlaces}"/>
+                    </p:column>
+
+                    <p:column headerText="ДАТА НАЧАЛА" width="100" filterBy="#{event.date}" sortBy="#{event.date}">
+                        <h:outputText value="#{event.date}"/>
+                    </p:column>
+
+                    <p:column headerText="СТОИМОСТЬ (РУБ)" width="60" filterBy="#{event.cost}" sortBy="#{event.cost}">
+                        <h:outputText value="#{event.cost}"/>
+                    </p:column>
+
+                    <p:column headerText="ДЛИТ. (МИНУТ)" width="60" filterBy="#{event.duration}" sortBy="#{event.duration}">
+                        <h:outputText value="#{event.duration}"/>
+                    </p:column>
+
+                    <p:column headerText="ЛОКАЦИЯ" width="100" filterBy="#{event.location.name}" sortBy="#{event.location.name}">
+                        <h:outputText value="#{event.location.name}"/>
+                    </p:column>
+
+                    <p:column headerText="СТАТУС" width="50" filterBy="#{event.status.name}" sortBy="#{event.status.name}">
+                        <h:outputText value="#{event.status.name}"/>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+        </h:form>
+
+        <h:form id="itemForm">
+            <p:dialog id="itemDialog" widgetVar="itemDialog" modal="true" closeOnEscape="true" dynamic="true" resizable="false">
+                <f:facet name="header">
+                    <h:outputText value="#{empty eventsView.selectedEvent.id ? 'Создание' : 'Изменение'}"/>
+                </f:facet>
+
+                <p:panelGrid columns="2" layout="tabular" styleClass="ui-noborder" columnClasses="grid_col_300,grid_col_300">
+                    <h:panelGroup>
+                        <p:outputLabel value="Id"/>
+                        <p:inputText value="#{eventsView.selectedEvent.id}" disabled="true"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Статус"/>
+                        <p:inputText value="#{eventsView.selectedEvent.status.name}" disabled="true"/>
+                    </h:panelGroup>
+                </p:panelGrid>
+
+                <p:panelGrid columns="1" layout="tabular" styleClass="ui-noborder" columnClasses="grid_col_600">
+                    <h:panelGroup>
+                        <p:outputLabel value="Название"/>
+                        <p:inputText value="#{eventsView.selectedEvent.name}" maxlength="256"
+                                     required="true" requiredMessage="Требуется указать Название"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Локация"/>
+                        <p:selectOneMenu value="#{eventsView.selectedEvent.location}" converter="#{eventsView.locationConverter}">
+                            <f:selectItem itemLabel="" itemValue="#{null}"/>
+                            <f:selectItems value="#{eventsView.locations}" var="location" itemLabel="#{location.name}" itemValue="#{location}"/>
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                </p:panelGrid>
+
+                <p:panelGrid columns="2" layout="tabular" styleClass="ui-noborder" columnClasses="grid_col_300,grid_col_300">
+                    <h:panelGroup>
+                        <p:outputLabel value="Дата начала"/>
+                        <p:datePicker value="#{eventsView.selectedEvent.date}" pattern="dd.MM.yyyy HH:mm" inputStyle="width:270px"
+                                      required="true" requiredMessage="Требуется указать Дату начала"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Владелец"/>
+                        <p:inputText value="#{eventsView.selectedEvent.owner.login}" disabled="true"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Всего мест"/>
+                        <p:inputNumber value="#{eventsView.selectedEvent.maxPlaces}" minValue="1" maxValue="150000" inputStyle="width:100%"
+                                       required="true" requiredMessage="Требуется указать Всего мест"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Занято мест"/>
+                        <p:inputText value="#{eventsView.selectedEvent.occupiedPlaces}" disabled="true"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Стоимость (руб)"/>
+                        <p:inputNumber value="#{eventsView.selectedEvent.cost}" inputStyle="width:270px" minValue="0"
+                                       required="true" requiredMessage="Требуется указать Стоимость"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Длительность (минут)"/>
+                        <p:inputNumber value="#{eventsView.selectedEvent.duration}" inputStyle="width:270px" minValue="30"
+                                       required="true" requiredMessage="Требуется указать Длительность"/>
+                    </h:panelGroup>
+                </p:panelGrid>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Сохранить" action="#{eventsView.saveEvent}"
+                                     update="tableForm:dataTable,growlForm"/>
+                    <p:commandButton value="Закрыть" type="button" onclick="PF('itemDialog').hide()"/>
+                </f:facet>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>
