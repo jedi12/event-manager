@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ru.project.my.eventmanager.repositories.entity.LocationEntity;
 
 public interface LocationRepository extends JpaRepository<LocationEntity, Long> {
-    boolean existsByName(String name);
+    boolean existsByNameIgnoreCase(String name);
 }

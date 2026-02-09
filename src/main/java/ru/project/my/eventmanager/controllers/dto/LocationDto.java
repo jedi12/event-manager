@@ -1,7 +1,11 @@
 package ru.project.my.eventmanager.controllers.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Size;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LocationDto {

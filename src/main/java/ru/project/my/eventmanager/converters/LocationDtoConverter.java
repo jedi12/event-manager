@@ -9,10 +9,11 @@ import java.util.List;
 @Component
 public class LocationDtoConverter {
 
-    public Location toLocation(LocationDto locationDto) {
+    public Location toLocation(LocationDto locationDto, Long locationId) {
         if (locationDto == null) return null;
 
         Location location = new Location();
+        location.setId(locationId);
         location.setName(locationDto.getName());
         location.setAddress(locationDto.getAddress());
         location.setCapacity(locationDto.getCapacity());

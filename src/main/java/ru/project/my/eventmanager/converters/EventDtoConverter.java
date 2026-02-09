@@ -1,6 +1,7 @@
 package ru.project.my.eventmanager.converters;
 
 import org.springframework.stereotype.Component;
+import ru.project.my.eventmanager.controllers.dto.EventCreateRequestDto;
 import ru.project.my.eventmanager.controllers.dto.EventDto;
 import ru.project.my.eventmanager.controllers.dto.EventSearchRequestDto;
 import ru.project.my.eventmanager.controllers.dto.EventUpdateRequestDto;
@@ -12,6 +13,19 @@ import java.util.List;
 
 @Component
 public class EventDtoConverter {
+
+    public Event toEvent(EventCreateRequestDto eventCreateRequestDto, Long eventId) {
+        if (eventCreateRequestDto == null) return null;
+
+        Event event = new Event();
+        event.setId(eventId);
+        event.setName(eventCreateRequestDto.getName());
+        event.setMaxPlaces(eventCreateRequestDto.getMaxPlaces());
+        event.setDate(eventCreateRequestDto.getDate());
+        event.setCost(eventCreateRequestDto.getCost());
+        event.setDuration(eventCreateRequestDto.getDuration());
+        return event;
+    }
 
     public Event toEvent(EventUpdateRequestDto eventUpdateRequestDto, Long eventId) {
         if (eventUpdateRequestDto == null) return null;

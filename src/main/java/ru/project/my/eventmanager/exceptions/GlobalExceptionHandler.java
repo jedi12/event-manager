@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
         } else if (e instanceof ConditionUnacceptableException cue) {
             detail = cue.getMessage();
         }
-        log.warn("Некорректный запрос: {}", e.getMessage());
+        log.warn("Некорректный запрос: {}", detail);
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

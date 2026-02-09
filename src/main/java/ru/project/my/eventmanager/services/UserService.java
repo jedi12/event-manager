@@ -27,7 +27,7 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        if (userRepository.existsByLogin(user.getLogin())) {
+        if (userRepository.existsByLoginIgnoreCase(user.getLogin())) {
             throw new ConditionUnacceptableException("Пользователь с таким логином уже существует");
         }
 

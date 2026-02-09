@@ -30,7 +30,7 @@ public class LocationService {
     }
 
     public Location createLocation(Location location) {
-        if (locationRepository.existsByName(location.getName())) {
+        if (locationRepository.existsByNameIgnoreCase(location.getName())) {
             throw new ConditionUnacceptableException("Локация с таким названием уже существует. Измените значение атрибута 'name'");
         }
 
