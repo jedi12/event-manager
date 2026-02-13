@@ -3,6 +3,7 @@ package ru.project.my.eventmanager.controllers;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +32,7 @@ public class EventController {
     }
 
     @PostMapping("/events")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<EventDto> createEvent(@Valid @RequestBody EventCreateRequestDto eventCreateRequestDto) {
         Event event = eventService.createEvent(dtoConverter.toEvent(eventCreateRequestDto, null), eventCreateRequestDto.getLocationId());
 
@@ -40,6 +42,7 @@ public class EventController {
     }
 
     @DeleteMapping("/events/{eventId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long eventId) {
         eventService.deleteEvent(eventId);
 
@@ -49,6 +52,7 @@ public class EventController {
     }
 
     @GetMapping("/events/{eventId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<EventDto> getEvent(@PathVariable Long eventId) {
         Event event = eventService.getEvent(eventId);
 
@@ -58,6 +62,7 @@ public class EventController {
     }
 
     @PutMapping("/events/{eventId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<EventDto> updateEvent(@PathVariable Long eventId, @Valid @RequestBody EventUpdateRequestDto eventUpdateRequestDto) {
         Event event = eventService.updateEvent(dtoConverter.toEvent(eventUpdateRequestDto, eventId), eventUpdateRequestDto.getLocationId());
 
@@ -67,6 +72,7 @@ public class EventController {
     }
 
     @PostMapping("/events/search")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<List<EventDto>> searchEvents(@Valid @RequestBody EventSearchRequestDto eventSearchRequestDto) {
         List<Event> events = eventService.searchEvents(dtoConverter.toSearchFilters(eventSearchRequestDto));
 
@@ -76,6 +82,7 @@ public class EventController {
     }
 
     @GetMapping("/events/my")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<List<EventDto>> getMyEvents() {
         List<Event> events = eventService.getMyEvents();
 
@@ -85,6 +92,7 @@ public class EventController {
     }
 
     @PostMapping("/events/registrations/{eventId}")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<Void> registerUserOnEvent(@PathVariable Long eventId) {
         eventService.registerUserOnEvent(eventId);
 
@@ -94,6 +102,7 @@ public class EventController {
     }
 
     @DeleteMapping("/events/registrations/cancel/{eventId}")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<Void> cancelRegisterUserOnEvent(@PathVariable Long eventId) {
         eventService.cancelRegisterUserOnEvent(eventId);
 
@@ -103,6 +112,7 @@ public class EventController {
     }
 
     @GetMapping("/events/registrations/my")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<List<EventDto>> getMyRegistrationsOnEvents() {
         List<Event> events = eventService.getMyRegistrationsOnEvents();
 

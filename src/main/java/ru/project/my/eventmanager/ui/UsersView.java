@@ -7,7 +7,9 @@ import jakarta.faces.view.ViewScoped;
 import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.project.my.eventmanager.security.AuthenticationService;
 import ru.project.my.eventmanager.services.UserService;
+import ru.project.my.eventmanager.services.model.Role;
 import ru.project.my.eventmanager.services.model.User;
 
 import java.io.Serializable;
@@ -19,17 +21,29 @@ import java.util.List;
 public class UsersView implements Serializable {
     private List<User> users;
     private User selectedUser;
+    private boolean admin;
+    private User currentUser;
 
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AuthenticationService authenticationService;
+
     @PostConstruct
     public void init() {
+        currentUser = authenticationService.getCurrentUser();
+        admin = Role.ADMIN.equals(currentUser.getRole());
+
         refreshUsers();
     }
 
     private void refreshUsers() {
-        users = new ArrayList<>(userService.getAllUsers());
+        if (admin) {
+            users = new ArrayList<>(userService.getAllUsers());
+        } else {
+            users = List.of(currentUser);
+        }
     }
 
     public void createUser() {
@@ -66,6 +80,10 @@ public class UsersView implements Serializable {
 
     public List<User> getUsers() {
         return users;
+    }
+
+    public boolean isAdmin() {
+        return admin;
     }
 
     public User getSelectedUser() {

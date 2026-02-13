@@ -7,7 +7,7 @@ public class User {
     private String login;
     private String password;
     private Integer age;
-    private String role;
+    private Role role;
 
     public Long getId() {
         return id;
@@ -37,10 +37,10 @@ public class User {
         this.age = age;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
@@ -64,7 +64,7 @@ public class User {
                 ", login='" + login + '\'' +
                 ", password='" + password + '\'' +
                 ", age=" + age +
-                ", role='" + role + '\'' +
+                ", role=" + role +
                 '}';
     }
 }
