@@ -13,6 +13,16 @@
     display:inline-grid;
 }
 
+.top_bar_title {
+    width: 100%;
+    text-align: center;
+}
+
+.top_bar_exit {
+    width: 100px;
+    text-align: center;
+}
+
 body .ui-datatable thead th {
     padding: 8px !important;
     font-size: 12px;

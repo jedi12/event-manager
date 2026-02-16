@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 
-public class EventCreateRequestDto extends EventUpdateRequestDto {
+public class EventCreateRequestDto {
     @NotNull
     @Size(min = 1, max = 255, message = "Требуется указать название Мероприятия (не длиннее 256 символов)")
     private String name;

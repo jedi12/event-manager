@@ -17,7 +17,8 @@
     <ui:define name="content">
         <h:form id="tableForm">
             <h:panelGrid columns="1">
-                <p:commandButton value="Создать" action="#{usersView.createUser}" update="itemForm,growlForm" resetValues="true"/>
+                <p:commandButton value="Создать" action="#{usersView.createUser}" update="itemForm,growlForm"
+                                 resetValues="true" rendered="#{usersView.admin}"/>
             </h:panelGrid>
 
             <p:panel style="padding:16px;overflow:auto;">
@@ -25,7 +26,8 @@
                              emptyMessage="Данные отсутствуют" selection="#{usersView.selectedUser}"
                              rows="20" paginator="true" paginatorPosition="bottom" rowsPerPageTemplate="5,10,20">
 
-                    <p:ajax event="rowDblselect" listener="#{usersView.editUser}" update="itemForm,growlForm" resetValues="true"/>
+                    <p:ajax event="rowDblselect" listener="#{usersView.editUser}" update="itemForm,growlForm"
+                            resetValues="true" disabled="#{!usersView.admin}"/>
 
                     <p:column headerText="ID" width="100" filterBy="#{user.id}" sortBy="#{user.id}">
                         <h:outputText value="#{user.id}"/>

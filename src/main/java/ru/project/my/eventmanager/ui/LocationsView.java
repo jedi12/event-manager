@@ -7,8 +7,10 @@ import jakarta.faces.view.ViewScoped;
 import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.project.my.eventmanager.security.AuthenticationService;
 import ru.project.my.eventmanager.services.LocationService;
 import ru.project.my.eventmanager.services.model.Location;
+import ru.project.my.eventmanager.services.model.Role;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,12 +21,18 @@ import java.util.List;
 public class LocationsView implements Serializable {
     private List<Location> locations;
     private Location selectedLocation;
+    private boolean admin;
 
     @Autowired
     private LocationService locationService;
 
+    @Autowired
+    private AuthenticationService authenticationService;
+
     @PostConstruct
     public void init() {
+        admin = Role.ADMIN.equals(authenticationService.getCurrentUser().getRole());
+
         refreshLocations();
     }
 
@@ -87,6 +95,10 @@ public class LocationsView implements Serializable {
 
     public List<Location> getLocations() {
         return locations;
+    }
+
+    public boolean isAdmin() {
+        return admin;
     }
 
     public Location getSelectedLocation() {

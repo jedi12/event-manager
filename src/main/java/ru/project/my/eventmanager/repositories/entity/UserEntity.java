@@ -2,28 +2,38 @@ package ru.project.my.eventmanager.repositories.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import ru.project.my.eventmanager.services.model.Role;
 
 @Entity
 @Table(name = "users")
 public class UserEntity {
-    public static final String ROLE_ADMIN = "ADMIN";
-    public static final String ROLE_USER = "USER";
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "login")
     private String login;
-    @Column(name = "password")
-    private String password;
+    @Column(name = "pass_hash")
+    private String passHash;
     @Column(name = "age")
     private Integer age;
+    @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private String role;
+    private Role role;
+
+    public UserEntity() {}
+
+    public UserEntity(String login, String passHash, Integer age, Role role) {
+        this.login = login;
+        this.passHash = passHash;
+        this.age = age;
+        this.role = role;
+    }
 
     public Long getId() {
         return id;
@@ -39,11 +49,11 @@ public class UserEntity {
         this.login = login;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPassHash() {
+        return passHash;
     }
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPassHash(String passHash) {
+        this.passHash = passHash;
     }
 
     public Integer getAge() {
@@ -53,10 +63,10 @@ public class UserEntity {
         this.age = age;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 }

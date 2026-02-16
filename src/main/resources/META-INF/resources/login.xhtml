@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="primefaces">
+
+<h:head>
+    <h:outputStylesheet name="css/styles.css"/>
+</h:head>
+
+<h:body styleClass="main-body" style="margin:0;background-color:#f7f9fa">
+    <h:form id="loginForm" prependId="false" style="height:100vh;display:grid">
+        <p:panel header="Авторизация" style="width:fit-content;margin:auto">
+            <h:panelGrid columns="1" columnClasses="grid_col_300">
+                <h:panelGroup>
+                    <p:outputLabel for="username" value="Логин:" />
+                    <p:inputText id="username" name="username" required="true" />
+                </h:panelGroup>
+
+                <h:panelGroup>
+                    <p:outputLabel for="password" value="Пароль:" />
+                    <p:password id="password" name="password" required="true" />
+                </h:panelGroup>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Войти" ajax="false" style="margin:10px 0"
+                                     onclick="document.getElementById('loginForm').action='/login';"
+                                     type="submit" />
+                </f:facet>
+            </h:panelGrid>
+
+            <h:outputText value="Неверный логин или пароль"
+                          rendered="#{param.error}" style="color:red" />
+        </p:panel>
+    </h:form>
+</h:body>
+</html>

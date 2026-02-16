@@ -25,7 +25,7 @@ public class UserDtoConverter {
         userDto.setId(user.getId());
         userDto.setLogin(user.getLogin());
         userDto.setAge(user.getAge());
-        userDto.setRole(user.getRole());
+        userDto.setRole(user.getRole().name());
         return userDto;
     }
 }

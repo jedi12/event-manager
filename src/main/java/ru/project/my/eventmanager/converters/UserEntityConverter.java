@@ -16,7 +16,7 @@ public class UserEntityConverter {
         User user = new User();
         user.setId(userEntity.getId());
         user.setLogin(userEntity.getLogin());
-        user.setPassword(userEntity.getPassword());
+        user.setPassword(userEntity.getPassHash());
         user.setAge(userEntity.getAge());
         user.setRole(userEntity.getRole());
         return user;
@@ -33,7 +33,7 @@ public class UserEntityConverter {
         UserEntity userEntity = new UserEntity();
         userEntity.setId(user.getId());
         userEntity.setLogin(user.getLogin());
-        userEntity.setPassword(user.getPassword());
+        userEntity.setPassHash(user.getPassword());
         userEntity.setAge(user.getAge());
         userEntity.setRole(user.getRole());
         return userEntity;

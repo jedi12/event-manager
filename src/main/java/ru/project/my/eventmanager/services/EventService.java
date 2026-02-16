@@ -6,8 +6,11 @@ import ru.project.my.eventmanager.converters.EventEntityConverter;
 import ru.project.my.eventmanager.exceptions.ConditionUnacceptableException;
 import ru.project.my.eventmanager.repositories.EventRepository;
 import ru.project.my.eventmanager.repositories.LocationRepository;
+import ru.project.my.eventmanager.repositories.UserRepository;
 import ru.project.my.eventmanager.repositories.entity.EventEntity;
 import ru.project.my.eventmanager.repositories.entity.LocationEntity;
+import ru.project.my.eventmanager.repositories.entity.UserEntity;
+import ru.project.my.eventmanager.security.AuthenticationService;
 import ru.project.my.eventmanager.services.model.Event;
 import ru.project.my.eventmanager.services.model.EventStatus;
 import ru.project.my.eventmanager.services.model.SearchFilter;
@@ -20,11 +23,15 @@ public class EventService {
     private final EventRepository eventRepository;
     private final EventEntityConverter converter;
     private final LocationRepository locationRepository;
+    private final UserRepository userRepository;
+    private final AuthenticationService authenticationService;
 
-    public EventService(EventRepository eventRepository, EventEntityConverter converter, LocationRepository locationRepository) {
+    public EventService(EventRepository eventRepository, EventEntityConverter converter, LocationRepository locationRepository, UserRepository userRepository, AuthenticationService authenticationService) {
         this.eventRepository = eventRepository;
         this.converter = converter;
         this.locationRepository = locationRepository;
+        this.userRepository = userRepository;
+        this.authenticationService = authenticationService;
     }
 
     public List<Event> getAllEvents() {
@@ -47,12 +54,15 @@ public class EventService {
             throw new ConditionUnacceptableException("Нельзя создать Мероприятие в указанной Локации, так как максимальная вместимость Локации меньше требуемой в Мероприятии. Измените id локации или параметр 'maxPlaces'");
         }
 
+        Long userId = authenticationService.getCurrentUser().getId();
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new ConditionUnacceptableException("Пользователь с userId=%s отсутствует в системе".formatted(userId)));
+
         EventEntity eventEntity = converter.toEntity(event);
         eventEntity.setLocation(existsLocation);
         eventEntity.setOccupiedPlaces(0);
         eventEntity.setStatus(EventStatus.WAIT_START);
-        // Работа с пользователем будет реализована в следующем ДЗ
-//        eventEntity.setOwner(currentUser);
+        eventEntity.setOwner(userEntity);
 
         eventEntity = eventRepository.save(eventEntity);
 
@@ -69,7 +79,6 @@ public class EventService {
         }
 
         currentEvent.setStatus(EventStatus.CANCELLED);
-        eventRepository.save(currentEvent);
     }
 
     public Event getEvent(Long eventId) {

@@ -17,8 +17,10 @@
     <ui:define name="content">
         <h:form id="tableForm">
             <h:panelGrid columns="2">
-                <p:commandButton value="Создать" action="#{locationsView.createLocation}" update="itemForm,growlForm" resetValues="true"/>
-                <p:commandButton value="Удалить" action="#{locationsView.deleteLocation}" update="tableForm,growlForm"/>
+                <p:commandButton value="Создать" action="#{locationsView.createLocation}" update="itemForm,growlForm"
+                                 resetValues="true" rendered="#{locationsView.admin}"/>
+                <p:commandButton value="Удалить" action="#{locationsView.deleteLocation}" update="tableForm,growlForm"
+                                 rendered="#{locationsView.admin}"/>
             </h:panelGrid>
 
             <p:panel style="padding:16px;overflow:auto;">
@@ -26,7 +28,8 @@
                              emptyMessage="Данные отсутствуют" selection="#{locationsView.selectedLocation}"
                              rows="20" paginator="true" paginatorPosition="bottom" rowsPerPageTemplate="5,10,20">
 
-                    <p:ajax event="rowDblselect" listener="#{locationsView.editLocation}" update="itemForm,growlForm" resetValues="true"/>
+                    <p:ajax event="rowDblselect" listener="#{locationsView.editLocation}" update="itemForm,growlForm"
+                            resetValues="true" disabled="#{!locationsView.admin}"/>
 
                     <p:column headerText="ID" width="100" filterBy="#{location.id}" sortBy="#{location.id}">
                         <h:outputText value="#{location.id}"/>
