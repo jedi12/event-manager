@@ -1,7 +1,6 @@
 package ru.project.my.eventmanager.services.model;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 public class Event {
@@ -15,7 +14,6 @@ public class Event {
     private Integer duration;
     private Location location;
     private EventStatus status;
-    private List<User> users;
 
     public Long getId() {
         return id;
@@ -85,13 +83,6 @@ public class Event {
     }
     public void setStatus(EventStatus status) {
         this.status = status;
-    }
-
-    public List<User> getUsers() {
-        return users;
-    }
-    public void setUsers(List<User> users) {
-        this.users = users;
     }
 
     @Override

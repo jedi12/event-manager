@@ -4,13 +4,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import ru.project.my.eventmanager.services.model.EventStatus;
 
@@ -23,32 +23,39 @@ public class EventEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "name")
     private String name;
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
     private UserEntity owner;
+
     @Column(name = "maxPlaces")
     private Integer maxPlaces;
+
     @Column(name = "occupiedPlaces")
     private Integer occupiedPlaces;
+
     @Column(name = "date")
     private LocalDateTime date;
+
     @Column(name = "cost")
     private Integer cost;
+
     @Column(name = "duration")
     private Integer duration;
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id")
     private LocationEntity location;
+
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private EventStatus status;
-    @ManyToMany
-    @JoinTable(name = "events_link_users",
-            joinColumns=@JoinColumn(name="event_id", referencedColumnName="id"),
-            inverseJoinColumns=@JoinColumn(name="user_id", referencedColumnName="id"))
-    private List<UserEntity> users;
+
+    @OneToMany(mappedBy = "event")
+    private List<RegistrationEntity> registrations;
 
     public Long getId() {
         return id;
@@ -120,10 +127,10 @@ public class EventEntity {
         this.status = status;
     }
 
-    public List<UserEntity> getUsers() {
-        return users;
+    public List<RegistrationEntity> getRegistrations() {
+        return registrations;
     }
-    public void setUsers(List<UserEntity> users) {
-        this.users = users;
+    public void setRegistrations(List<RegistrationEntity> registrations) {
+        this.registrations = registrations;
     }
 }
