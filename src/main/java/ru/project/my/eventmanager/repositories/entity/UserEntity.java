@@ -16,12 +16,16 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "login")
     private String login;
+
     @Column(name = "pass_hash")
     private String passHash;
+
     @Column(name = "age")
     private Integer age;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
