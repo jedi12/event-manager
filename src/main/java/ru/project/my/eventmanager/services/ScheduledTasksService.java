@@ -29,19 +29,18 @@ public class ScheduledTasksService {
         for (EventEntity eventEntity: eventsCandidates) {
             if (EventStatus.WAIT_START.equals(eventEntity.getStatus())) {
                 self.switchEventStatus(eventEntity.getId(), EventStatus.STARTED);
-
             }
 
             LocalDateTime eventFinishDate = eventEntity.getDate().plusMinutes(eventEntity.getDuration());
             if (EventStatus.STARTED.equals(eventEntity.getStatus()) && eventFinishDate.isBefore(currentDateTime)) {
                 self.switchEventStatus(eventEntity.getId(), EventStatus.FINISHED);
-
             }
         }
     }
 
     @Transactional
     public void switchEventStatus(Long eventId, EventStatus eventStatus) {
-        eventRepository.findByIdAndLock(eventId).ifPresent(event -> event.setStatus(eventStatus));
+        eventRepository.findByIdAndLock(eventId)
+                .ifPresent(event -> event.setStatus(eventStatus));
     }
 }

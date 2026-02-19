@@ -1,9 +1,9 @@
 package ru.project.my.eventmanager.services;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.project.my.eventmanager.converters.EventEntityConverter;
-import ru.project.my.eventmanager.converters.UserEntityConverter;
 import ru.project.my.eventmanager.exceptions.ConditionUnacceptableException;
 import ru.project.my.eventmanager.repositories.EventRepository;
 import ru.project.my.eventmanager.repositories.LocationRepository;
@@ -30,16 +30,14 @@ public class EventService {
     private final RegistrationRepository registrationRepository;
     private final LocationRepository locationRepository;
     private final UserRepository userRepository;
-    private final UserEntityConverter userEntityConverter;
     private final AuthenticationService authenticationService;
 
-    public EventService(EventRepository eventRepository, EventEntityConverter converter, RegistrationRepository registrationRepository, LocationRepository locationRepository, UserRepository userRepository, UserEntityConverter userEntityConverter, AuthenticationService authenticationService) {
+    public EventService(EventRepository eventRepository, EventEntityConverter converter, RegistrationRepository registrationRepository, LocationRepository locationRepository, UserRepository userRepository, AuthenticationService authenticationService) {
         this.eventRepository = eventRepository;
         this.converter = converter;
         this.registrationRepository = registrationRepository;
         this.locationRepository = locationRepository;
         this.userRepository = userRepository;
-        this.userEntityConverter = userEntityConverter;
         this.authenticationService = authenticationService;
     }
 
@@ -85,7 +83,7 @@ public class EventService {
 
         User currentUser = authenticationService.getCurrentUser();
         if (!currentUser.getId().equals(currentEvent.getOwner().getId()) && !Role.ADMIN.equals(currentUser.getRole())) {
-            throw new ConditionUnacceptableException("Текущий пользователь не может отменить это Мероприятие, так как он не является его создателем и у него нет роли ADMIN");
+            throw new AccessDeniedException("Текущий пользователь не может отменить это Мероприятие, так как он не является его создателем и у него нет роли ADMIN");
         }
 
         if (!currentEvent.getStatus().equals(EventStatus.WAIT_START)) {
@@ -111,7 +109,7 @@ public class EventService {
 
         User currentUser = authenticationService.getCurrentUser();
         if (!currentUser.getId().equals(existsEvent.getOwner().getId()) && !Role.ADMIN.equals(currentUser.getRole())) {
-            throw new ConditionUnacceptableException("Текущий пользователь не может изменить это Мероприятие, так как он не является его создателем и у него нет роли ADMIN");
+            throw new AccessDeniedException("Текущий пользователь не может изменить это Мероприятие, так как он не является его создателем и у него нет роли ADMIN");
         }
 
         LocationEntity existsLocation = locationRepository.findById(locationId)
@@ -132,7 +130,7 @@ public class EventService {
         }
 
         if (event.getMaxPlaces() < existsEvent.getOccupiedPlaces()) {
-            throw new ConditionUnacceptableException("Нельзя установить максимальное количество мест на Мероприятии на %s, так как это меньше, чем уже зарегистрированных участников");
+            throw new ConditionUnacceptableException("Нельзя установить максимальное количество мест на Мероприятии на %s, так как это меньше, чем уже зарегистрированных участников".formatted(event.getMaxPlaces()));
         }
 
         existsEvent.setName(event.getName());
@@ -192,7 +190,7 @@ public class EventService {
             throw new ConditionUnacceptableException("Нельзя зарегистрироваться на это Мероприятие, так как все места уже заняты");
         }
 
-        RegistrationEntity registrationEntity = new RegistrationEntity(userEntityConverter.toEntity(currentUser), eventEntity);
+        RegistrationEntity registrationEntity = new RegistrationEntity(userRepository.getReferenceById(currentUser.getId()), eventEntity);
         registrationRepository.save(registrationEntity);
 
         eventEntity.setOccupiedPlaces(eventEntity.getOccupiedPlaces() + 1);
