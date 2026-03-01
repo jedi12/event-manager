@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
-    static final Logger log = LoggerFactory.getLogger(CustomAuthenticationEntryPoint.class.getName());
+    static final Logger log = LoggerFactory.getLogger(CustomAuthenticationEntryPoint.class);
 
     private final ObjectMapper objectMapper;
 
