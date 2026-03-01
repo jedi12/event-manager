@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class.getName());
+    static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class, ConditionUnacceptableException.class})
     public ResponseEntity<ErrorMessageResponse> handleValidationException(Exception e) {
