@@ -1,5 +1,6 @@
 package ru.project.my.eventmanager.repositories;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.project.my.eventmanager.repositories.entity.RegistrationEntity;
 
@@ -13,5 +14,6 @@ public interface RegistrationRepository extends JpaRepository<RegistrationEntity
 
     void deleteByEventId(Long eventId);
 
+    @EntityGraph(attributePaths = {"user"})
     List<RegistrationEntity> findByEventId(Long eventId);
 }

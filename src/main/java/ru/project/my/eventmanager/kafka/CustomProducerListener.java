@@ -10,7 +10,7 @@ import ru.project.my.eventmanager.kafka.model.EventChangeMessage;
 
 @Component
 public class CustomProducerListener implements ProducerListener<Long, EventChangeMessage> {
-    static final Logger log = LoggerFactory.getLogger(CustomProducerListener.class);
+    private static final Logger log = LoggerFactory.getLogger(CustomProducerListener.class);
 
     @Override
     public void onSuccess(ProducerRecord<Long, EventChangeMessage> producerRecord, RecordMetadata recordMetadata) {

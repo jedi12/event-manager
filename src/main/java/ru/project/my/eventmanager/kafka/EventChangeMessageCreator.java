@@ -26,13 +26,13 @@ public class EventChangeMessageCreator {
         return message;
     }
 
-    public EventChangeMessage createMessage(EventEntity oldEvent, EventEntity newEvent, Long userId, List<RegistrationEntity> registrations) {
+    private EventChangeMessage createMessage(EventEntity oldEvent, EventEntity newEvent, Long userId, List<RegistrationEntity> registrations) {
         EventChangeMessage message = new EventChangeMessage();
         message.setEventId(oldEvent.getId());
         message.setChangedByUserId(userId);
         message.setOwnerId(oldEvent.getOwner().getId());
 
-        message.setUsers(registrations.stream().map(RegistrationEntity::getId).toList());
+        message.setUsers(registrations.stream().map(registration -> registration.getUser().getId()).toList());
 
         if (!Objects.equals(oldEvent.getName(), newEvent.getName())) {
             message.setName(new FieldChange<>(oldEvent.getName(), newEvent.getName()));

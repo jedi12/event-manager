@@ -26,7 +26,7 @@ public class EventChangeMessage {
 
     @JsonIgnore
     public boolean isContainsChanges() {
-        return name != null || maxPlaces != null ||occupiedPlaces != null ||date != null ||cost != null ||duration != null ||locationId != null ||status != null;
+        return name != null || maxPlaces != null || occupiedPlaces != null || date != null || cost != null || duration != null || locationId != null || status != null;
     }
 
     public Long getEventId() {
