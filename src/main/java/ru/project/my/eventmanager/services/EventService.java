@@ -1,10 +1,14 @@
 package ru.project.my.eventmanager.services;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.project.my.eventmanager.converters.EventEntityConverter;
 import ru.project.my.eventmanager.exceptions.ConditionUnacceptableException;
+import ru.project.my.eventmanager.kafka.EventChangeMessageCreator;
+import ru.project.my.eventmanager.kafka.model.EventChangeMessage;
 import ru.project.my.eventmanager.repositories.EventRepository;
 import ru.project.my.eventmanager.repositories.LocationRepository;
 import ru.project.my.eventmanager.repositories.RegistrationRepository;
@@ -31,14 +35,20 @@ public class EventService {
     private final LocationRepository locationRepository;
     private final UserRepository userRepository;
     private final AuthenticationService authenticationService;
+    private final KafkaTemplate<Long, EventChangeMessage> kafkaTemplate;
+    private final EventChangeMessageCreator messageCreator;
+    private final String eventChangeTopic;
 
-    public EventService(EventRepository eventRepository, EventEntityConverter converter, RegistrationRepository registrationRepository, LocationRepository locationRepository, UserRepository userRepository, AuthenticationService authenticationService) {
+    public EventService(EventRepository eventRepository, EventEntityConverter converter, RegistrationRepository registrationRepository, LocationRepository locationRepository, UserRepository userRepository, AuthenticationService authenticationService, KafkaTemplate<Long, EventChangeMessage> kafkaTemplate, EventChangeMessageCreator messageCreator, @Value("${eventmanager.kafka.event-change-topic-name}") String eventChangeTopic) {
         this.eventRepository = eventRepository;
         this.converter = converter;
         this.registrationRepository = registrationRepository;
         this.locationRepository = locationRepository;
         this.userRepository = userRepository;
         this.authenticationService = authenticationService;
+        this.kafkaTemplate = kafkaTemplate;
+        this.messageCreator = messageCreator;
+        this.eventChangeTopic = eventChangeTopic;
     }
 
     public List<Event> getAllEvents() {
@@ -106,6 +116,7 @@ public class EventService {
     public Event updateEvent(Event event, Long locationId) {
         EventEntity existsEvent = eventRepository.findByIdAndLock(event.getId())
                 .orElseThrow(() -> new ConditionUnacceptableException("Мероприятие с eventId=%s отсутствует в системе".formatted(event.getId())));
+        Event oldEvent = converter.toEvent(existsEvent);
 
         User currentUser = authenticationService.getCurrentUser();
         if (!currentUser.getId().equals(existsEvent.getOwner().getId()) && !Role.ADMIN.equals(currentUser.getRole())) {
@@ -141,6 +152,12 @@ public class EventService {
         existsEvent.setLocation(existsLocation);
 
         existsEvent = eventRepository.save(existsEvent);
+
+        List<RegistrationEntity> registrations = registrationRepository.findByEventId(existsEvent.getId());
+        EventChangeMessage message = messageCreator.create(converter.toEntity(oldEvent), existsEvent, currentUser.getId(), registrations);
+        if (message.isContainsChanges()) {
+            kafkaTemplate.send(eventChangeTopic, event.getId(), message);
+        }
 
         return converter.toEvent(existsEvent);
     }

@@ -7,22 +7,27 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import ru.project.my.eventmanager.security.jwt.JwtTokenManager;
+import ru.project.my.eventmanager.services.UserService;
 import ru.project.my.eventmanager.services.model.User;
 
 @Component
 public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenManager jwtTokenManager;
+    private final UserService userService;
 
-    public AuthenticationService(AuthenticationManager authenticationManager, JwtTokenManager jwtTokenManager) {
+    public AuthenticationService(AuthenticationManager authenticationManager, JwtTokenManager jwtTokenManager, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenManager = jwtTokenManager;
+        this.userService = userService;
     }
 
     public String authenticateUser(String login, String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
 
-        return jwtTokenManager.generateJwt(login);
+        User user = userService.findUserByLogin(login);
+
+        return jwtTokenManager.generateJwt(user);
     }
 
     public User getCurrentUser() {

@@ -5,6 +5,7 @@ import io.jsonwebtoken.security.Keys;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import ru.project.my.eventmanager.services.model.User;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -19,9 +20,11 @@ public class JwtTokenManager {
         this.expTimeMinutes = expTimeMinutes;
     }
 
-    public String generateJwt(String login) {
+    public String generateJwt(User user) {
         return Jwts.builder()
-                .subject(login)
+                .subject(user.getLogin())
+                .claim("role", user.getRole().name())
+                .claim("userId", user.getId())
                 .signWith(secretKey)
                 .issuedAt(new Date())
                 .expiration(DateUtils.addMinutes(new Date(), expTimeMinutes))
