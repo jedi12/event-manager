@@ -1,0 +1,65 @@
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      # Важно: внутри сети Docker это "kafka:29092", снаружи — "localhost:9092"
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  postgres-for-course:
+    image: postgres:16
+    container_name: postgres-for-course
+    ports:
+      - "54321:5432"
+    environment:
+      POSTGRES_PASSWORD: 1
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  event-manager:
+    build:
+      context: . # Папка, где лежит этот compose
+      dockerfile: Dockerfile
+    container_name: event-manager
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres-for-course
+      - kafka
+    environment:
+      # Обращаемся к БД по имени сервиса 'postgres-for-course'
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-for-course:5432/postgres
+      # К Кафке — по имени 'kafka' и внутреннему порту 29092
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+
+  event-notificator:
+    build:
+      context: ../event-notificator # Путь к соседу
+      dockerfile: Dockerfile
+    container_name: event-notificator
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres-for-course
+      - kafka
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-for-course:5432/postgres
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+
+volumes:
+  pg_data:
