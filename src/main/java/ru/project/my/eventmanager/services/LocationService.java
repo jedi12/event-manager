@@ -1,5 +1,8 @@
 package ru.project.my.eventmanager.services;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.project.my.eventmanager.converters.LocationEntityConverter;
@@ -9,6 +12,7 @@ import ru.project.my.eventmanager.repositories.EventRepository;
 import ru.project.my.eventmanager.repositories.LocationRepository;
 import ru.project.my.eventmanager.repositories.entity.LocationEntity;
 import ru.project.my.eventmanager.services.model.Location;
+import ru.project.my.eventmanager.services.model.LocationList;
 
 import java.util.List;
 
@@ -24,13 +28,15 @@ public class LocationService {
         this.eventRepository = eventRepository;
     }
 
-    public List<Location> getAllLocations() {
+    @Cacheable(value = "locations_list")
+    public LocationList getAllLocations() {
         List<LocationEntity> locationEntity = locationRepository.findAll();
 
-        return converter.toLocation(locationEntity);
+        return new LocationList(converter.toLocation(locationEntity));
     }
 
     @Transactional
+    @CacheEvict(value = "locations_list", allEntries = true)
     public Location createLocation(Location location) {
         if (locationRepository.existsByNameIgnoreCase(location.getName())) {
             throw new ConditionUnacceptableException("Локация с таким названием уже существует. Измените значение атрибута 'name'");
@@ -43,6 +49,10 @@ public class LocationService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "locations", key = "#locationId"),
+            @CacheEvict(value = "locations_list", allEntries = true)
+    })
     public void deleteLocation(Long locationId) {
         LocationEntity locationEntity = locationRepository.findById(locationId)
                 .orElseThrow(() -> new NotFoundException("Локация с locationId=%s отсутствует в системе".formatted(locationId)));
@@ -54,6 +64,7 @@ public class LocationService {
         locationRepository.delete(locationEntity);
     }
 
+    @Cacheable(value = "locations", key = "#locationId")
     public Location getLocation(Long locationId) {
         LocationEntity locationEntity = locationRepository.findById(locationId)
                 .orElseThrow(() -> new NotFoundException("Локация с locationId=%s отсутствует в системе".formatted(locationId)));
@@ -62,6 +73,10 @@ public class LocationService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "locations", key = "#updatedLocation.id"),
+            @CacheEvict(value = "locations_list", allEntries = true)
+    })
     public Location updateLocation(Location updatedLocation) {
         LocationEntity existsLocation = locationRepository.findById(updatedLocation.getId())
                 .orElseThrow(() -> new NotFoundException("Локация с locationId=%s отсутствует в системе".formatted(updatedLocation.getId())));

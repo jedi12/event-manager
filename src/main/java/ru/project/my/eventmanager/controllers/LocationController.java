@@ -31,7 +31,7 @@ public class LocationController {
     @GetMapping("/locations")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<List<LocationDto>> getAllLocations() {
-        List<Location> locations = locationService.getAllLocations();
+        List<Location> locations = locationService.getAllLocations().getLocations();
 
         return ResponseEntity
                 .status(HttpStatus.OK)

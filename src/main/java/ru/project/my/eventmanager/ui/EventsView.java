@@ -35,7 +35,7 @@ public class EventsView implements Serializable {
 
     @PostConstruct
     public void init() {
-        locations = locationService.getAllLocations();
+        locations = locationService.getAllLocations().getLocations();
         refreshEvents();
     }
 

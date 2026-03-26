@@ -21,6 +21,15 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    restart: always
+    volumes:
+      - redis_data:/data
+
   postgres-for-course:
     image: postgres:16
     container_name: postgres-for-course
@@ -41,11 +50,14 @@ services:
     depends_on:
       - postgres-for-course
       - kafka
+      - redis
     environment:
       # Обращаемся к БД по имени сервиса 'postgres-for-course'
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-for-course:5432/postgres
       # К Кафке — по имени 'kafka' и внутреннему порту 29092
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
 
   event-notificator:
     build:
@@ -57,9 +69,13 @@ services:
     depends_on:
       - postgres-for-course
       - kafka
+      - redis
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-for-course:5432/postgres
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
 
 volumes:
   pg_data:
+  redis_data:

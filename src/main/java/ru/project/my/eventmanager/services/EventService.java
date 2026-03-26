@@ -1,6 +1,8 @@
 package ru.project.my.eventmanager.services;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -87,6 +89,7 @@ public class EventService {
     }
 
     @Transactional
+    @CacheEvict(value = "events", key = "#eventId")
     public void deleteEvent(Long eventId) {
         EventEntity currentEvent = eventRepository.findByIdAndLock(eventId)
                 .orElseThrow(() -> new ConditionUnacceptableException("Мероприятие с eventId=%s отсутствует в системе".formatted(eventId)));
@@ -105,6 +108,7 @@ public class EventService {
         currentEvent.setStatus(EventStatus.CANCELLED);
     }
 
+    @Cacheable(value = "events", key = "#eventId")
     public Event getEvent(Long eventId) {
         EventEntity eventEntity = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ConditionUnacceptableException("Мероприятие с eventId=%s отсутствует в системе".formatted(eventId)));
@@ -113,6 +117,7 @@ public class EventService {
     }
 
     @Transactional
+    @CacheEvict(value = "events", key = "#event.id")
     public Event updateEvent(Event event, Long locationId) {
         EventEntity existsEvent = eventRepository.findByIdAndLock(event.getId())
                 .orElseThrow(() -> new ConditionUnacceptableException("Мероприятие с eventId=%s отсутствует в системе".formatted(event.getId())));
@@ -189,6 +194,7 @@ public class EventService {
     }
 
     @Transactional
+    @CacheEvict(value = "events", key = "#eventId")
     public void registerUserOnEvent(Long eventId) {
         User currentUser = authenticationService.getCurrentUser();
         boolean userRegisteredAlready = registrationRepository.existsByUserIdAndEventId(currentUser.getId(), eventId);
@@ -214,6 +220,7 @@ public class EventService {
     }
 
     @Transactional
+    @CacheEvict(value = "events", key = "#eventId")
     public void cancelRegisterUserOnEvent(Long eventId) {
         User currentUser = authenticationService.getCurrentUser();
         RegistrationEntity registrationEntity = registrationRepository.findByUserIdAndEventId(currentUser.getId(), eventId)
