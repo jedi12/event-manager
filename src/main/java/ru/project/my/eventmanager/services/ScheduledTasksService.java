@@ -1,6 +1,7 @@
 package ru.project.my.eventmanager.services;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -53,6 +54,7 @@ public class ScheduledTasksService {
     }
 
     @Transactional
+    @CacheEvict(value = "events", key = "#eventId")
     public void switchEventStatus(Long eventId, EventStatus eventStatus) {
         eventRepository.findByIdAndLock(eventId).ifPresent(eventEntity -> {
             eventEntity.setStatus(eventStatus);

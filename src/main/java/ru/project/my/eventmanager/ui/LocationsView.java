@@ -37,7 +37,7 @@ public class LocationsView implements Serializable {
     }
 
     private void refreshLocations() {
-        locations = new ArrayList<>(locationService.getAllLocations());
+        locations = new ArrayList<>(locationService.getAllLocations().getLocations());
     }
 
     public void createLocation() {
